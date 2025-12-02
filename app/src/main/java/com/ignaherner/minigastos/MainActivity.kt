@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,15 +35,21 @@ class MainActivity : AppCompatActivity() {
             // Armar lista
             val listaGastos = listOf(gasto1, gasto2, gasto3)
 
+            // Validacion: todos son 0 -> no tiene sentido calcular
+            if(listaGastos.all { it == 0.0}) {
+                Toast.makeText(this, "Ingresa al menos un gasto", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             // Usar funciones de Kotlin para calcular
             val total = calcularTotal(listaGastos)
             val promedio = calcularPromedio(listaGastos)
             val mayor = gastoMasAlto(listaGastos)
 
             // Mostrar resultados
-            tvTotal.text = "Total: $total"
-            tvPromedio.text = "Promedio: $promedio"
-            tvMayor.text = "Gasto más alto: $mayor"
+            tvTotal.text = "Total: ${total.format2()}"
+            tvPromedio.text = "Promedio: ${promedio.format2()}"
+            tvMayor.text = "Gasto más alto: ${mayor.format2()}"
         }
     }
 
@@ -68,4 +76,9 @@ class MainActivity : AppCompatActivity() {
         }
         return mayor
     }
+
+}
+// Función de extensión para formatear con 2 decimales
+private fun Double.format2(): String {
+    return String.format(Locale.getDefault(), "%.2f", this)
 }
