@@ -12,6 +12,7 @@
         android:text="Mini Control de Gastos"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:paddingTop="20dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
