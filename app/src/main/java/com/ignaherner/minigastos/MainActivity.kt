@@ -5,13 +5,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
+
+    private val gastoCalculator = GastoCalculator()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -42,9 +43,9 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Usar funciones de Kotlin para calcular
-            val total = calcularTotal(listaGastos)
-            val promedio = calcularPromedio(listaGastos)
-            val mayor = gastoMasAlto(listaGastos)
+            val total = gastoCalculator.calcularTotal(listaGastos)
+            val promedio = gastoCalculator.calcularPromedio(listaGastos)
+            val mayor = gastoCalculator.gastoMasAlto(listaGastos)
 
             // Mostrar resultados
             tvTotal.text = "Total: ${total.format2()}"
@@ -52,31 +53,6 @@ class MainActivity : AppCompatActivity() {
             tvMayor.text = "Gasto más alto: ${mayor.format2()}"
         }
     }
-
-    // -------- Funciones de lógica (puras, sin UI) --------
-
-    private fun calcularTotal (gastos: List<Double>): Double {
-        return gastos.sum()
-    }
-
-    private fun calcularPromedio(gastos: List<Double>): Double {
-        if(gastos.isEmpty()) return 0.0
-        val total = gastos.sum()
-        return total / gastos.size
-    }
-
-    private fun gastoMasAlto(gastos: List<Double>): Double{
-        if (gastos.isEmpty()) return 0.0
-
-        var mayor = gastos[0]
-        for (gasto in gastos) {
-            if (gasto > mayor) {
-                mayor = gasto
-            }
-        }
-        return mayor
-    }
-
 }
 // Función de extensión para formatear con 2 decimales
 private fun Double.format2(): String {
