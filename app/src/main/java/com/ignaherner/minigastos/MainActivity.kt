@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         val tvTotal = findViewById<TextView>(R.id.tvTotal)
         val tvPromedio = findViewById<TextView>(R.id.tvPromedio)
         val tvMayor = findViewById<TextView>(R.id.tvMayor)
+        val tvDetalles = findViewById<TextView>(R.id.tvDetalles)
 
         // 2) Logica al apretar el botón
         btnCalcular.setOnClickListener {
@@ -46,11 +47,26 @@ class MainActivity : AppCompatActivity() {
             val total = gastoCalculator.calcularTotal(listaGastos)
             val promedio = gastoCalculator.calcularPromedio(listaGastos)
             val mayor = gastoCalculator.gastoMasAlto(listaGastos)
+            val porcentajes = gastoCalculator.calcularPorcentajes(listaGastos)
+            val indiceMayor = gastoCalculator.obtenerIndiceGastoMasAlto(listaGastos)
+
+            val nombreMayor = when (indiceMayor) {
+                0 -> "Gasto 1"
+                1 -> "Gasto 2"
+                2 -> "Gasto 3"
+                else -> "-"
+            }
 
             // Mostrar resultados
             tvTotal.text = "Total: ${total.format2()}"
             tvPromedio.text = "Promedio: ${promedio.format2()}"
-            tvMayor.text = "Gasto más alto: ${mayor.format2()}"
+            tvMayor.text = "Gasto más alto: ${mayor.format2()} ($nombreMayor)"
+
+            val p1 = porcentajes.getOrNull(0)?.format2() ?: "0.00"
+            val p2 = porcentajes.getOrNull(1)?.format2() ?: "0.00"
+            val p3 = porcentajes.getOrNull(2)?.format2() ?: "0.00"
+
+            tvDetalles.text = "Detalle: G1: $p1% | G2: $p2% | G3: $p3%"
         }
     }
 }
