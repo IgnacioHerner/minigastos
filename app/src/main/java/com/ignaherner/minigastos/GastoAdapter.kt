@@ -7,7 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class GastoAdapter (
-    private val gastos: List<Gasto>
+    private val gastos: MutableList<Gasto>,
+    private val onItemLogClick: (Int) -> Unit
 ) : RecyclerView.Adapter<GastoAdapter.GastoViewHolder>() {
 
     inner class GastoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -17,6 +18,15 @@ class GastoAdapter (
         fun bind(gasto: Gasto){
             tvDescription.text = gasto.descripcion
             tvMontoItem.text = "$${gasto.monto.format2()}"
+
+            //Long click para eliminar
+            itemView.setOnLongClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemLogClick(position)
+                }
+                true
+            }
         }
     }
 

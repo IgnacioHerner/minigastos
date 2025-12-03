@@ -31,27 +31,31 @@ class MainActivity : AppCompatActivity() {
         val tvMayor = findViewById<TextView>(R.id.tvMayor)
         val tvDetalles = findViewById<TextView>(R.id.tvDetalles)
 
-        adapter = GastoAdapter(listaGastos)
+        adapter = GastoAdapter(listaGastos) { position ->
+            eliminarGasto(position, tvTotal, tvPromedio, tvMayor, tvDetalles)
+        }
         rvGastos.layoutManager = LinearLayoutManager(this)
         rvGastos.adapter = adapter
+        actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)
 
-        // 2) Logica al apretar el botón
+        // Lógica de "Agregar gasto"
         btnAgregar.setOnClickListener {
             val descripcion = etDescripcion.text.toString().trim()
             val montoTexto = etMonto.text.toString().trim()
 
-            if(descripcion.isEmpty() || montoTexto.isEmpty()) {
-                Toast.makeText(this, "Completa descripcion y monto", Toast.LENGTH_SHORT).show()
+            // Validaciones
+            if (descripcion.isEmpty() || montoTexto.isEmpty()) {
+                Toast.makeText(this, "Completá descripción y monto", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val monto = montoTexto.toDoubleOrNull()
-            if(monto == null || monto <= 0.0) {
-                Toast.makeText(this, "Ingresa un monto valido", Toast.LENGTH_SHORT).show()
+            if (monto == null || monto <= 0.0) {
+                Toast.makeText(this, "Ingresá un monto válido", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Agregar gasto a la lista
+            // Crear gasto y agregar a la lista
             val nuevoGasto = Gasto(descripcion = descripcion, monto = monto)
             listaGastos.add(nuevoGasto)
             adapter.notifyItemInserted(listaGastos.size - 1)
@@ -60,38 +64,77 @@ class MainActivity : AppCompatActivity() {
             etDescripcion.text?.clear()
             etMonto.text?.clear()
 
-
-            // Recalcular resumen
-            val montos = listaGastos.map { it.monto }
-
-
-            // Usar funciones de Kotlin para calcular
-            val total = gastoCalculator.calcularTotal(montos)
-            val promedio = gastoCalculator.calcularPromedio(montos)
-            val mayor = gastoCalculator.gastoMasAlto(montos)
-            val porcentajes = gastoCalculator.calcularPorcentajes(montos)
-            val indiceMayor = gastoCalculator.obtenerIndiceGastoMasAlto(montos)
-
-            val nombreMayor = if (indiceMayor in listaGastos.indices) {
-                listaGastos[indiceMayor].descripcion
-            } else {
-                "-"
-            }
-
-            // Mostrar resultados
-            tvTotal.text = "Total: ${total.format2()}"
-            tvPromedio.text = "Promedio: ${promedio.format2()}"
-            tvMayor.text = "Gasto más alto: ${mayor.format2()} ($nombreMayor)"
-
-            val detalles = listaGastos.mapIndexed { index, gasto ->
-                val porcentaje = porcentajes.getOrNull(index)?.format2() ?: "0.00"
-                "${gasto.descripcion} : $porcentaje%"
-            }.joinToString(" | ")
-
-            tvDetalles.text = "Detalle: $detalles"
+            // Actualizar resumen
+            actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)
         }
     }
+
+    private fun actualizarResumen(
+        tvTotal: TextView,
+        tvPromedio: TextView,
+        tvMayor: TextView,
+        tvDetalles: TextView
+    ) {
+        if(listaGastos.isEmpty()) {
+            tvTotal.text = "Total: 0.00"
+            tvPromedio.text = "Promedio 0.00"
+            tvMayor.text = "Gasto mas alto: -"
+            tvDetalles.text = "Detalle: sin gastos"
+            return
+        }
+
+        val montos = listaGastos.map {it.monto}
+
+        val total = gastoCalculator.calcularTotal(montos)
+        val promedio = gastoCalculator.calcularPromedio(montos)
+        val mayor = gastoCalculator.gastoMasAlto(montos)
+        val porcentajes = gastoCalculator.calcularPorcentajes(montos)
+        val indiceMayor = gastoCalculator.obtenerIndiceGastoMasAlto(montos)
+
+        val nombreMayor = if (indiceMayor in listaGastos.indices) {
+            listaGastos[indiceMayor].descripcion
+        } else {
+            "-"
+        }
+
+        // Mostrar resultados
+        tvTotal.text = "Total: ${total.format2()}"
+        tvPromedio.text = "Promedio: ${promedio.format2()}"
+        tvMayor.text = "Gasto más alto: ${mayor.format2()} ($nombreMayor)"
+
+        val detalles = listaGastos.mapIndexed { index, gasto ->
+            val porcentaje = porcentajes.getOrNull(index)?.format2() ?: "0.00"
+            "${gasto.descripcion} : $porcentaje%"
+        }.joinToString(" | ")
+
+        tvDetalles.text = "Detalle: $detalles"
+    }
+
+    private fun eliminarGasto(
+        position: Int,
+        tvTotal: TextView,
+        tvPromedio: TextView,
+        tvMayor: TextView,
+        tvDetalles: TextView
+    ) {
+        if (position !in listaGastos.indices) return
+
+        val gastoEliminado = listaGastos[position]
+        listaGastos.removeAt(position)
+        adapter.notifyItemRemoved(position)
+
+        Toast.makeText(
+            this,
+            "Eliminado: ${gastoEliminado.descripcion}",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)
+    }
+
 }
+
+
 // Función de extensión para formatear con 2 decimales
 fun Double.format2(): String {
     return String.format(Locale.getDefault(), "%.2f", this)
