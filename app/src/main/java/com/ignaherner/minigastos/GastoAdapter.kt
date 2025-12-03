@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class GastoAdapter (
     private val gastos: MutableList<Gasto>,
-    private val onItemLogClick: (Int) -> Unit
+    private val onItemLogClick: (Int) -> Unit,
+    private val onItemClick: (Int) -> Unit
 ) : RecyclerView.Adapter<GastoAdapter.GastoViewHolder>() {
 
     inner class GastoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -26,6 +27,13 @@ class GastoAdapter (
                     onItemLogClick(position)
                 }
                 true
+            }
+
+            itemView.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(position)
+                }
             }
         }
     }

@@ -3,8 +3,10 @@ package com.ignaherner.minigastos
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,9 +33,15 @@ class MainActivity : AppCompatActivity() {
         val tvMayor = findViewById<TextView>(R.id.tvMayor)
         val tvDetalles = findViewById<TextView>(R.id.tvDetalles)
 
-        adapter = GastoAdapter(listaGastos) { position ->
-            eliminarGasto(position, tvTotal, tvPromedio, tvMayor, tvDetalles)
-        }
+        adapter = GastoAdapter(
+            listaGastos,
+            onItemLogClick = {position ->
+                eliminarGasto(position, tvTotal, tvPromedio, tvMayor, tvDetalles)
+            },
+            onItemClick = {position ->
+                editarGasto(position, tvTotal, tvPromedio, tvMayor, tvDetalles)
+            }
+        )
         rvGastos.layoutManager = LinearLayoutManager(this)
         rvGastos.adapter = adapter
         actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)
@@ -130,6 +138,61 @@ class MainActivity : AppCompatActivity() {
         ).show()
 
         actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)
+    }
+
+    private fun editarGasto(
+        position: Int,
+        tvTotal: TextView,
+        tvPromedio: TextView,
+        tvMayor: TextView,
+        tvDetalles: TextView
+    ) {
+        if (position !in listaGastos.indices) return
+
+        val gasto = listaGastos[position]
+
+        //Creamos inputs para el dialogo
+        val inputDescripcion = EditText(this).apply {
+            setText(gasto.descripcion)
+            hint = "Descripcion"
+        }
+
+        val inputMonto = EditText(this).apply {
+            setText(gasto.monto.format2())
+            hint = "Monto"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
+                        android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+        }
+
+        // Layaout vertical simple para meter ambos EditText
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(32,16,32,0)
+            addView(inputDescripcion)
+            addView(inputMonto)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Editar gasto")
+            .setView(layout)
+            .setPositiveButton ("Guardar"){ _, _ ->
+                val nuevaDesc = inputDescripcion.text.toString().trim()
+                val nuevoMontoTexto = inputMonto.text.toString().trim()
+                val nuevoMonto = nuevoMontoTexto.toDoubleOrNull()
+
+                if(nuevaDesc.isEmpty() || nuevoMonto == null || nuevoMonto <=0.0) {
+                    Toast.makeText(this, "Datos invalidos", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
+                //Actualizamos el gasto
+                listaGastos[position] = Gasto(nuevaDesc, nuevoMonto)
+                adapter.notifyItemChanged(position)
+
+                actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)
+            }
+            .setNegativeButton ("Cancelar", null)
+            .show()
     }
 
 }
