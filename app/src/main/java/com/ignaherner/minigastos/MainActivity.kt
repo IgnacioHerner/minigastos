@@ -38,6 +38,9 @@ class MainActivity : AppCompatActivity() {
         val tvMayor = findViewById<TextView>(R.id.tvMayor)
         val tvDetalles = findViewById<TextView>(R.id.tvDetalles)
         val tvResumenCategorias = findViewById<TextView>(R.id.tvResumenCategorias)
+        val btnOrdenFecha = findViewById<Button>(R.id.btnOrdenFecha)
+        val btnOrdenMontoAsc = findViewById<Button>(R.id.btnOrdenMontoAsc)
+        val btnOrdenMontoDesc = findViewById<Button>(R.id.btnOrdenMontoDesc)
 
         //Configuraciones del Spinner
         val nombresCategorias = Categoria.values().map { it.displayName }
@@ -62,6 +65,36 @@ class MainActivity : AppCompatActivity() {
         rvGastos.layoutManager = LinearLayoutManager(this)
         rvGastos.adapter = adapter
         actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles, tvResumenCategorias)
+
+        btnOrdenFecha.setOnClickListener {
+            if (listaGastos.isEmpty()) {
+                Toast.makeText(this, "No hay gastos para ordenar", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Ordena por fecha descendente (mas recientes primero)
+            listaGastos.sortByDescending { it.fecha }
+            adapter.notifyDataSetChanged()
+        }
+
+        btnOrdenMontoAsc.setOnClickListener {
+            if (listaGastos.isEmpty()) {
+                Toast.makeText(this, "No hay gastos para ordenar", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            listaGastos.sortBy { it.monto } // Menor a mayor
+            adapter.notifyDataSetChanged()
+        }
+
+        btnOrdenMontoDesc.setOnClickListener {
+            if(listaGastos.isEmpty()) {
+                Toast.makeText(this, "No hay gastos para ordenar", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            listaGastos.sortedByDescending { it.monto } //mayor a menor
+            adapter.notifyDataSetChanged()
+        }
 
         // Lógica de "Agregar gasto"
         btnAgregar.setOnClickListener {
