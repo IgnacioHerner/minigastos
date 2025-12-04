@@ -1,9 +1,11 @@
 package com.ignaherner.minigastos
 
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -26,12 +28,24 @@ class MainActivity : AppCompatActivity() {
         // 1) Referencias a las vistas
         val etDescripcion = findViewById<EditText>(R.id.etDescripcion)
         val etMonto = findViewById<EditText>(R.id.etMonto)
+        val spCategoria= findViewById<Spinner>(R.id.spCategoria)
         val btnAgregar = findViewById<Button>(R.id.btnAgregar)
         val rvGastos = findViewById< RecyclerView>(R.id.rvGastos)
         val tvTotal = findViewById<TextView>(R.id.tvTotal)
         val tvPromedio = findViewById<TextView>(R.id.tvPromedio)
         val tvMayor = findViewById<TextView>(R.id.tvMayor)
         val tvDetalles = findViewById<TextView>(R.id.tvDetalles)
+
+        //Configuraciones del Spinner
+        val nombresCategorias = Categoria.values().map { it.displayName }
+        val spinnerAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            nombresCategorias
+        )
+
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
+        spCategoria.adapter = spinnerAdapter
 
         adapter = GastoAdapter(
             listaGastos,
@@ -63,8 +77,13 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            val categoriaSeleccionada = Categoria.values()[spCategoria.selectedItemPosition]
+
             // Crear gasto y agregar a la lista
-            val nuevoGasto = Gasto(descripcion = descripcion, monto = monto)
+            val nuevoGasto = Gasto(
+                descripcion = descripcion,
+                monto = monto,
+                categoria = categoriaSeleccionada)
             listaGastos.add(nuevoGasto)
             adapter.notifyItemInserted(listaGastos.size - 1)
 
@@ -112,7 +131,7 @@ class MainActivity : AppCompatActivity() {
 
         val detalles = listaGastos.mapIndexed { index, gasto ->
             val porcentaje = porcentajes.getOrNull(index)?.format2() ?: "0.00"
-            "${gasto.descripcion} : $porcentaje%"
+            "${gasto.descripcion} (${gasto.categoria.displayName}): $porcentaje%"
         }.joinToString(" | ")
 
         tvDetalles.text = "Detalle: $detalles"
@@ -186,7 +205,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 //Actualizamos el gasto
-                listaGastos[position] = Gasto(nuevaDesc, nuevoMonto)
+                listaGastos[position] = Gasto(
+                    nuevaDesc,
+                    nuevoMonto,
+                    categoria = gasto.categoria)
                 adapter.notifyItemChanged(position)
 
                 actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)

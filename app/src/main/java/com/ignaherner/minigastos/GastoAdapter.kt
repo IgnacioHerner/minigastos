@@ -17,7 +17,7 @@ class GastoAdapter (
         private val tvMontoItem: TextView = itemView.findViewById(R.id.tvMontoItem)
 
         fun bind(gasto: Gasto){
-            tvDescription.text = gasto.descripcion
+            tvDescription.text = "${gasto.descripcion} (${gasto.categoria.displayName})"
             tvMontoItem.text = "$${gasto.monto.format2()}"
 
             //Long click para eliminar
