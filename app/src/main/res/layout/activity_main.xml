@@ -105,8 +105,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Detalle: "
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tvResumenCategorias"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvResumenCategorias"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Resumen por categoria: "
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

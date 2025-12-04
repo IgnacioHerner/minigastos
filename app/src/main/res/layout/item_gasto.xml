@@ -17,6 +17,16 @@
         app:layout_constraintHorizontal_weight="1"/>
 
     <TextView
+        android:id="@+id/tvFechaItem"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="01/01/2025"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/tvDescripcionItem"
+        app:layout_constraintTop_toBottomOf="@+id/tvDescripcionItem"
+        app:layout_constraintEnd_toStartOf="@+id/tvMontoItem"/>
+
+    <TextView
         android:id="@+id/tvMontoItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

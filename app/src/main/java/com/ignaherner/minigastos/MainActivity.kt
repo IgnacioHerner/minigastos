@@ -12,6 +12,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
@@ -35,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         val tvPromedio = findViewById<TextView>(R.id.tvPromedio)
         val tvMayor = findViewById<TextView>(R.id.tvMayor)
         val tvDetalles = findViewById<TextView>(R.id.tvDetalles)
+        val tvResumenCategorias = findViewById<TextView>(R.id.tvResumenCategorias)
 
         //Configuraciones del Spinner
         val nombresCategorias = Categoria.values().map { it.displayName }
@@ -50,15 +53,15 @@ class MainActivity : AppCompatActivity() {
         adapter = GastoAdapter(
             listaGastos,
             onItemLogClick = {position ->
-                eliminarGasto(position, tvTotal, tvPromedio, tvMayor, tvDetalles)
+                eliminarGasto(position, tvTotal, tvPromedio, tvMayor, tvDetalles, tvResumenCategorias)
             },
             onItemClick = {position ->
-                editarGasto(position, tvTotal, tvPromedio, tvMayor, tvDetalles)
+                editarGasto(position, tvTotal, tvPromedio, tvMayor, tvDetalles, tvResumenCategorias)
             }
         )
         rvGastos.layoutManager = LinearLayoutManager(this)
         rvGastos.adapter = adapter
-        actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)
+        actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles, tvResumenCategorias)
 
         // Lógica de "Agregar gasto"
         btnAgregar.setOnClickListener {
@@ -79,11 +82,16 @@ class MainActivity : AppCompatActivity() {
 
             val categoriaSeleccionada = Categoria.values()[spCategoria.selectedItemPosition]
 
+            // Fecha actual
+            val fechaActual = System.currentTimeMillis()
+
             // Crear gasto y agregar a la lista
             val nuevoGasto = Gasto(
                 descripcion = descripcion,
                 monto = monto,
-                categoria = categoriaSeleccionada)
+                categoria = categoriaSeleccionada,
+                fecha = fechaActual
+            )
             listaGastos.add(nuevoGasto)
             adapter.notifyItemInserted(listaGastos.size - 1)
 
@@ -92,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             etMonto.text?.clear()
 
             // Actualizar resumen
-            actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)
+            actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles, tvResumenCategorias)
         }
     }
 
@@ -100,13 +108,15 @@ class MainActivity : AppCompatActivity() {
         tvTotal: TextView,
         tvPromedio: TextView,
         tvMayor: TextView,
-        tvDetalles: TextView
+        tvDetalles: TextView,
+        tvResumenCategorias: TextView
     ) {
         if(listaGastos.isEmpty()) {
             tvTotal.text = "Total: 0.00"
             tvPromedio.text = "Promedio 0.00"
             tvMayor.text = "Gasto mas alto: -"
             tvDetalles.text = "Detalle: sin gastos"
+            tvResumenCategorias.text = "Resumen por categoria: sin gastos"
             return
         }
 
@@ -135,6 +145,20 @@ class MainActivity : AppCompatActivity() {
         }.joinToString(" | ")
 
         tvDetalles.text = "Detalle: $detalles"
+
+        //Resumen por categoria
+        val totalPorCategoria: Map<Categoria, Double> =
+            listaGastos
+                .groupBy { it.categoria } // Agrupo por categoria
+                .mapValues { entry ->
+                    entry.value.sumOf { it.monto } // Sumo los montos de esa categoria
+                }
+        val resumenCategoriasTexto = totalPorCategoria.entries.joinToString(" | ") { (categoria, totalCat) ->
+            "${categoria.displayName}: ${totalCat.format2()}"
+        }
+
+        tvResumenCategorias.text = "Resumen por categorias: $resumenCategoriasTexto"
+
     }
 
     private fun eliminarGasto(
@@ -142,7 +166,8 @@ class MainActivity : AppCompatActivity() {
         tvTotal: TextView,
         tvPromedio: TextView,
         tvMayor: TextView,
-        tvDetalles: TextView
+        tvDetalles: TextView,
+        tvResumenCategorias: TextView
     ) {
         if (position !in listaGastos.indices) return
 
@@ -156,7 +181,7 @@ class MainActivity : AppCompatActivity() {
             Toast.LENGTH_SHORT
         ).show()
 
-        actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)
+        actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles, tvResumenCategorias)
     }
 
     private fun editarGasto(
@@ -164,7 +189,8 @@ class MainActivity : AppCompatActivity() {
         tvTotal: TextView,
         tvPromedio: TextView,
         tvMayor: TextView,
-        tvDetalles: TextView
+        tvDetalles: TextView,
+        tvResumenCategorias: TextView
     ) {
         if (position !in listaGastos.indices) return
 
@@ -208,10 +234,12 @@ class MainActivity : AppCompatActivity() {
                 listaGastos[position] = Gasto(
                     nuevaDesc,
                     nuevoMonto,
-                    categoria = gasto.categoria)
+                    categoria = gasto.categoria,
+                    fecha = gasto.fecha
+                )
                 adapter.notifyItemChanged(position)
 
-                actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles)
+                actualizarResumen(tvTotal, tvPromedio, tvMayor, tvDetalles, tvResumenCategorias)
             }
             .setNegativeButton ("Cancelar", null)
             .show()
@@ -223,4 +251,10 @@ class MainActivity : AppCompatActivity() {
 // Función de extensión para formatear con 2 decimales
 fun Double.format2(): String {
     return String.format(Locale.getDefault(), "%.2f", this)
+}
+
+fun Long.toDateText(): String {
+    val date = Date(this)
+    val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    return format.format(date)
 }

@@ -15,10 +15,12 @@ class GastoAdapter (
     inner class GastoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvDescription: TextView = itemView.findViewById(R.id.tvDescripcionItem)
         private val tvMontoItem: TextView = itemView.findViewById(R.id.tvMontoItem)
+        private val tvFechaItem: TextView = itemView.findViewById(R.id.tvFechaItem)
 
         fun bind(gasto: Gasto){
             tvDescription.text = "${gasto.descripcion} (${gasto.categoria.displayName})"
             tvMontoItem.text = "$${gasto.monto.format2()}"
+            tvFechaItem.text = gasto.fecha.toDateText() // Mostrar fecha
 
             //Long click para eliminar
             itemView.setOnLongClickListener {
