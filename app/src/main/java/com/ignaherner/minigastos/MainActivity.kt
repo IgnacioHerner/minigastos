@@ -14,7 +14,7 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
     // ViewModel: dueño del estado
-    private val viewModel: GastosViewModel by viewModels()
+    private lateinit var viewModel: GastosViewModel
 
     // Calculadora de resúmenes
     private val gastoCalculator = GastoCalculator()
@@ -23,8 +23,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: GastoAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Crear DB y DAO
+        val database = AppDatabase.getInstance(applicationContext)
+        val gastoDao = database.gastoDao()
+
+        // Crear factory y ViewModel
+        val factory = GastosViewModelFactory(gastoDao)
+        viewModel = androidx.lifecycle.ViewModelProvider(this, factory)[GastosViewModel::class.java]
 
         // 1) Referencias a las vistas
         val etDescripcion = findViewById<EditText>(R.id.etDescripcion)
