@@ -1,5 +1,8 @@
 package com.ignaherner.minigastos
 
+
+//Enum de categorias posibles para un gasto
+// displayName es el texto que ve el usuario
 enum class Categoria(val displayName: String) {
     COMIDA("Comida"),
     TRANSPORTE("Transporte"),

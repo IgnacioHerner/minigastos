@@ -1,18 +1,22 @@
 package com.ignaherner.minigastos
 
+// Clase responsable de toda la logica de calculo
+// NO sabe nada de Android, solo numeros y listas
 class GastoCalculator {
 
-
+    // Suma todos los montos
     fun calcularTotal (gastos: List<Double>): Double {
         return gastos.sum()
     }
 
+    // Calcula el promedio de los montos.
     fun calcularPromedio(gastos: List<Double>): Double {
         if(gastos.isEmpty()) return 0.0
         val total = gastos.sum()
         return total / gastos.size
     }
 
+    // Devuelve el monto más alto de la lista.
     fun gastoMasAlto(gastos: List<Double>): Double{
         if (gastos.isEmpty()) return 0.0
 
@@ -25,7 +29,8 @@ class GastoCalculator {
         return mayor
     }
 
-    // Porcentajes de cada gasto sobre el total
+    // Devuelve una lista con el porcentaje de cada gasto respecto al total.
+    // Ej: [100.0, 50.0, 25.0] (no necesariamente suman EXACTO 100 por decimales).
     fun calcularPorcentajes(gastos: List<Double>): List<Double> {
         val total = calcularTotal(gastos)
         if (total == 0.0) {
@@ -35,7 +40,8 @@ class GastoCalculator {
         return gastos.map { (it / total) * 100 }
     }
 
-    // Indice del gasto mas alto ( 0, 1 o 2)
+    // Devuelve la posición del gasto más alto en la lista (0, 1, 2, ...).
+    // Si la lista está vacía, -1.
     fun obtenerIndiceGastoMasAlto(gastos: List<Double>) : Int {
         if (gastos.isEmpty()) return -1
 
