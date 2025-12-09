@@ -1,4 +1,4 @@
-package com.ignaherner.minigastos
+package com.ignaherner.minigastos.domain
 
 // Clase responsable de toda la logica de calculo
 // NO sabe nada de Android, solo numeros y listas

@@ -1,9 +1,8 @@
-package com.ignaherner.minigastos
+package com.ignaherner.minigastos.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
-// Representa UN gasto cargado por el usuario
+import com.ignaherner.minigastos.data.local.Categoria
 
 @Entity(tableName = "gastos")
 data class Gasto (

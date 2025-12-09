@@ -1,5 +1,4 @@
-package com.ignaherner.minigastos
-
+package com.ignaherner.minigastos.data.local
 
 //Enum de categorias posibles para un gasto
 // displayName es el texto que ve el usuario

@@ -1,7 +1,8 @@
-package com.ignaherner.minigastos
+package com.ignaherner.minigastos.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.ignaherner.minigastos.data.model.GastoDao
 
 class GastosViewModelFactory(
     private val gastoDao: GastoDao

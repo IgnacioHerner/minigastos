@@ -1,12 +1,22 @@
-package com.ignaherner.minigastos
+package com.ignaherner.minigastos.ui.main
 
 import android.os.Bundle
+import android.text.InputType
 import android.widget.*
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ignaherner.minigastos.ui.main.GastoAdapter
+import com.ignaherner.minigastos.ui.main.GastosViewModel
+import com.ignaherner.minigastos.ui.main.GastosViewModelFactory
+import com.ignaherner.minigastos.R
+import com.ignaherner.minigastos.data.local.Categoria
+import com.ignaherner.minigastos.data.local.Gasto
+import com.ignaherner.minigastos.data.model.AppDatabase
+import com.ignaherner.minigastos.domain.GastoCalculator
+import com.ignaherner.minigastos.domain.format2
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -33,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         // Crear factory y ViewModel
         val factory = GastosViewModelFactory(gastoDao)
-        viewModel = androidx.lifecycle.ViewModelProvider(this, factory)[GastosViewModel::class.java]
+        viewModel = ViewModelProvider(this, factory)[GastosViewModel::class.java]
 
         // 1) Referencias a las vistas
         val etDescripcion = findViewById<EditText>(R.id.etDescripcion)
@@ -129,8 +139,8 @@ class MainActivity : AppCompatActivity() {
         val inputMonto = EditText(this).apply {
             setText(gasto.monto.format2())
             hint = "Monto"
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
-                    android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            inputType = InputType.TYPE_CLASS_NUMBER or
+                    InputType.TYPE_NUMBER_FLAG_DECIMAL
         }
 
         val layout = LinearLayout(this).apply {
@@ -217,13 +227,4 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-// Extensiones
-fun Double.format2(): String {
-    return String.format(Locale.getDefault(), "%.2f", this)
-}
 
-fun Long.toDateText(): String {
-    val date = Date(this)
-    val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    return format.format(date)
-}

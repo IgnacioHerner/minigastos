@@ -1,6 +1,7 @@
-package com.ignaherner.minigastos
+package com.ignaherner.minigastos.data.model
 
 import androidx.room.TypeConverter
+import com.ignaherner.minigastos.data.local.Categoria
 
 class Converters {
 

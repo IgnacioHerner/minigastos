@@ -1,7 +1,11 @@
-package com.ignaherner.minigastos
+package com.ignaherner.minigastos.data.model
 
-import androidx.room.*
-
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
+import com.ignaherner.minigastos.data.local.Gasto
 
 @Dao
 interface GastoDao {

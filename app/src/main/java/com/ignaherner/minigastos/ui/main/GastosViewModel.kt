@@ -1,9 +1,12 @@
-package com.ignaherner.minigastos
+package com.ignaherner.minigastos.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ignaherner.minigastos.data.local.Categoria
+import com.ignaherner.minigastos.data.local.Gasto
+import com.ignaherner.minigastos.data.model.GastoDao
 import kotlinx.coroutines.launch
 
 class GastosViewModel(
@@ -27,7 +30,7 @@ class GastosViewModel(
 
     fun agregarGasto(descripcion: String, monto: Double, categoria: Categoria) {
         viewModelScope.launch {
-            val nuevoGasto = Gasto (
+            val nuevoGasto = Gasto(
                 descripcion = descripcion,
                 monto = monto,
                 categoria = categoria,

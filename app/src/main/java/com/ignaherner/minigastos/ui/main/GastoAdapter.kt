@@ -1,10 +1,14 @@
-package com.ignaherner.minigastos
+package com.ignaherner.minigastos.ui.main
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.ignaherner.minigastos.R
+import com.ignaherner.minigastos.data.local.Gasto
+import com.ignaherner.minigastos.domain.format2
+import com.ignaherner.minigastos.domain.toDateText
 
 // Adapter que sabe cómo dibujar la lista de Gasto en el RecyclerView.
 class GastoAdapter (

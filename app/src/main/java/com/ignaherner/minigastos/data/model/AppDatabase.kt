@@ -1,11 +1,13 @@
-package com.ignaherner.minigastos
+package com.ignaherner.minigastos.data.model
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-
+import com.ignaherner.minigastos.data.model.Converters
+import com.ignaherner.minigastos.data.model.GastoDao
+import com.ignaherner.minigastos.data.local.Gasto
 
 @Database(
     entities = [Gasto::class],
